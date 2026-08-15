@@ -1,25 +1,17 @@
-# Enterprise Server Deployment and Operating System Installation
-
-**Course:** ITEP 414 - System Administration and Maintenance
-**Week:** 3 Portfolio Project
-**Student:** Mark Give V. De Leon
-**Program:** BSIT 3C
+# Week 3 – Enterprise Server Deployment and Operating System Installation
 
 ## Project Overview
-
-This project covers the full deployment of an enterprise Linux server using Ubuntu Server. The activity simulates the role of a Junior System Administrator setting up a new server for a startup company, ABC Startup Solutions. The server was installed, configured, secured, and documented following standard enterprise practices. The project also includes a comparison of boot technologies (BIOS vs UEFI) and a comparison of server operating systems (Windows Server, Ubuntu Server, and Rocky Linux).
+This project covers the deployment of an Ubuntu Server 26.04 LTS virtual machine for TechLine Solutions, a fictional startup preparing to host file sharing, remote administration, database, web, and internal services. The project was completed in the role of a Junior System Administrator, covering installation, configuration, SSH setup, and verification of the server.
 
 ## Learning Objectives
-
 - Explain the purpose of an operating system in enterprise environments
 - Differentiate BIOS and UEFI firmware
 - Explain the stages of the computer boot process
 - Compare Ubuntu Server, Windows Server, and Rocky Linux
-- Install Ubuntu Server in a virtual machine
-- Configure server settings during installation
+- Install and configure a Linux server in a virtual environment
 - Enable secure remote administration using SSH
-- Verify server functionality
-- Document installation procedures
+- Verify server functionality through command-line checks
+- Produce professional technical documentation
 
 ## Virtual Machine Specifications
 
@@ -27,61 +19,58 @@ This project covers the full deployment of an enterprise Linux server using Ubun
 |---|---|
 | Name | Ubuntu-Server-Week03 |
 | RAM | 4 GB |
-| CPU | 2 Virtual Processors |
+| CPU | 2 virtual processors |
 | Storage | 40 GB (VDI) |
 | Network | NAT |
-| Optical Drive | Ubuntu Server 26.04 LTS ISO |
+| OS | Ubuntu Server 26.04 LTS |
 
 ## Installation Summary
-
-Ubuntu Server was installed using the guided installation wizard. The language was set to English, keyboard layout to English (US), and the hostname was configured as `server01`. Network configuration was assigned automatically through DHCP, receiving the IP address `10.0.2.15`. The disk was partitioned using the guided "Use Entire Disk" option with an LVM volume group, formatted as ext4, with a 2 GB `/boot` partition and the remaining space allocated to the root partition. OpenSSH Server was installed during setup to enable secure remote access. No additional server snaps were installed.
+Ubuntu Server was installed with English language and keyboard settings, DHCP-assigned networking, hostname `server01`, guided full-disk partitioning with LVM enabled (2 GB /boot partition, remaining space as an LVM volume group), and OpenSSH Server enabled during setup. No additional server snaps were installed beyond the base system.
 
 ## Configuration Summary
-
 - Hostname: `server01`
+- Assigned IP address: `10.0.2.15`
 - Filesystem: ext4
-- Disk size: 40 GB
 - Partition scheme: Guided LVM (boot partition + LVM volume group)
-- SSH: Installed and enabled during setup
-- Password authentication over SSH: Enabled
+- SSH: Installed and enabled during setup, password authentication enabled
+- User account created with sudo privileges
 
 ## Verification Results
 
-| Task | Command | Result |
+| Check | Command | Result |
 |---|---|---|
-| Login | N/A | Successful login with created user account |
-| Hostname check | `hostname` | Returned `server01` |
-| IP address check | `ip addr` | Confirmed IP `10.0.2.15` |
-| Internet connectivity | `ping -c 4 google.com` | 4 successful replies, 0% packet loss |
-| System update | `sudo apt update && sudo apt upgrade -y` | Packages updated successfully |
-| SSH service check | `systemctl status ssh` | Status: active (running) |
+| Login | N/A | Successful |
+| Hostname | `hostname` | `server01` |
+| IP Address | `ip addr` | `10.0.2.15` confirmed |
+| Internet Connectivity | `ping -c 4 google.com` | 4/4 packets received, 0% packet loss |
+| System Update | `sudo apt update && sudo apt upgrade -y` | Completed successfully after mirror fix |
+| SSH Status | `systemctl status ssh` | `active (running)` |
 
 ## BIOS vs UEFI Highlights
-
-UEFI has largely replaced BIOS in modern computers due to faster boot times, support for disks larger than 2 TB, a graphical setup interface, and built-in security through Secure Boot. BIOS is limited to a 2 TB disk size, uses the older Master Boot Record partition style, and has no built-in security checks during boot. The full comparison table and explanation are available in `BIOS_vs_UEFI.pdf`.
+UEFI has largely replaced BIOS in modern systems due to support for larger disk sizes through GPT partitioning (BIOS is capped at 2TB via MBR), faster boot times, and built-in security features like Secure Boot. UEFI also provides a graphical setup interface, while BIOS is limited to plain text menus. These improvements are the main reasons nearly all computers built in the last several years use UEFI, including it being a requirement for Windows 11. The full comparison table and detailed write-up are in `BIOS_vs_UEFI.pdf`.
 
 ## Boot Process Flowchart
+![Boot Process Flowchart](diagrams/BootProcessFlowchart.png)
 
-The Ubuntu Server boot process follows these stages: Power On, BIOS/UEFI Initialization, Boot Device Detection, Boot Loader (GRUB), Linux Kernel Loads, init/systemd Starts, Services Start, and Login Prompt. The full flowchart is available in `BootProcessFlowchart.pdf` and inside the `diagrams/` folder.
+The Ubuntu boot process follows eight stages: Power On → BIOS/UEFI Initialization → Boot Device Detection → Boot Loader (GRUB) → Linux Kernel Loads → init/systemd Starts → Services Start → Login Prompt.
 
 ## Challenges Encountered
-
-During the Ubuntu Server installation, the virtual machine crashed unexpectedly after the user profile setup screen, requiring a fresh restart of the installation process. During the system update step, one package (`linux-firmware-amd-misc`) failed to download from the regional Ubuntu mirror due to a 403 error. This was resolved by switching to the global Ubuntu archive mirror, and the package was confirmed to be non-essential for the virtual machine environment.
+- The virtual machine crashed unexpectedly right after the user profile setup screen during the first installation attempt, requiring a full restart. This was resolved by navigating installer screens with Tab instead of arrow keys.
+- During the system update step, one package (`linux-firmware-amd-misc`) failed to download from the regional Philippine mirror (`ph.archive.ubuntu.com`) with a 403 Forbidden error. This was resolved by switching the APT source to the global Ubuntu archive mirror using `sed`, then re-running the update. The failed package was confirmed to be non-essential AMD GPU firmware, not needed in a virtualized environment.
 
 ## Reflection
 
-This Week 3 activity gave me my first real hands on experience setting up a server from scratch, and it taught me a lot more than I expected going in. Before this project, I had never worked with Ubuntu Server, only Ubuntu Desktop a little, so seeing a plain black terminal screen with no graphical interface was strange at first. I later understood that this is actually how real servers are supposed to run, since companies do not need a desktop interface taking up resources on a machine that is meant to run services in the background.
+Going into this project, I hadn't worked with Ubuntu Server before, only the desktop version a little, so setting up a server entirely through the command line felt intimidating at first. The installer itself was straightforward once I got used to navigating it, but I ran into a problem almost immediately when the VM crashed right after I finished the user profile screen. I figured out it was because I was using the arrow keys to move around instead of Tab, which apparently the installer doesn't handle well. It was a small thing, but it taught me that sometimes the reason something breaks isn't a big technical issue, it's just a workflow habit that doesn't match what the tool expects.
 
-The installer navigation was one of the more challenging parts for me. At one point during the setup, right after entering my password on the user profile screen, the virtual machine suddenly crashed and I had to restart the whole installation process from the beginning. It was frustrating at first, but it taught me that these kinds of issues are normal in system administration work, and that patience and being willing to just try again is part of the job. I also had to learn how to properly move through each installer screen using Tab instead of arrow keys, which I did not expect to be an issue at first.
+The bigger challenge came during the system update step. One package kept failing with a 403 Forbidden error, and at first I assumed I had done something wrong with the network setup. After digging into it, I found out it was actually the regional Philippine mirror that was having issues, not my configuration. Switching to the global Ubuntu archive mirror fixed it right away. What stuck with me from that experience is that troubleshooting isn't always about fixing your own mistakes, sometimes the problem is external and you just need to identify where it's actually coming from instead of assuming it's you.
 
-Understanding the Linux commands was also new for me. Running commands like hostname, ip addr, and systemctl status ssh for the first time felt intimidating, but once I saw the output and understood what each command was actually checking, it started to make more sense. I also ran into a small issue during the system update where one package failed to download from the regional mirror, and I learned how to switch to a different mirror source to fix it instead of just giving up on the update.
+Working through the verification steps afterward, like checking the hostname, confirming the IP address, testing connectivity, and verifying SSH was active, gave me a much clearer picture of what "the server is working" actually means in practice. It's not just about getting through an installer, it's about proving the thing you built actually does what it's supposed to do.
 
-Beyond the technical steps, this activity helped me understand why operating system choice and boot technology actually matter in real environments. Comparing BIOS and UEFI showed me how much boot technology has changed over the years, especially with things like Secure Boot and support for larger drives. Comparing Windows Server, Ubuntu Server, and Rocky Linux also helped me realize that there is no single best operating system, it really depends on what a company already uses and what they need the server to do.
+Researching BIOS versus UEFI also helped connect a lot of dots for me. I understood roughly what they were before, but breaking down the actual differences, like GPT versus MBR, Secure Boot, and disk size limits, made it clear why virtually every modern machine has moved to UEFI. Comparing Windows Server, Ubuntu Server, and Rocky Linux afterward reinforced that there's rarely a single "best" OS, it really depends on what a company already has and what they're trying to build.
 
-Overall, this project pushed me to slow down, read instructions carefully, and troubleshoot problems on my own instead of expecting everything to work perfectly on the first try. These are skills I know I will need moving forward, especially since my goal is to become a full stack developer who understands not just how to build applications, but also how the systems running them actually work underneath.
+Overall, this project gave me a much more realistic sense of what day-to-day system administration actually involves. It's less about following a checklist perfectly and more about troubleshooting calmly when something doesn't go as expected.
 
 ## References
-
-- Ubuntu Server official documentation: https://ubuntu.com/server/docs
-- Canonical, Ubuntu 26.04 LTS Release Notes
-- Microsoft Windows Server 2025 Evaluation Center
+- Ubuntu Server Documentation. https://ubuntu.com/server/docs
+- Canonical Ubuntu Server Installation Guide. https://ubuntu.com/server/docs/install/step-by-step
+- OpenSSH Documentation. https://www.openssh.com/manual.html
